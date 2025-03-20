@@ -1,5 +1,9 @@
 import streamlit as st
 import peptacular as pt
+import streamlit as st
+import urllib.parse
+from streamlit_js_eval import get_page_location
+
 
 from constants import (
     DEFAULT_PEPTIDE, DEFAULT_CHARGE, DEFAULT_MASS_TYPE, DEFAULT_FRAGMENT_TYPES,
@@ -67,6 +71,8 @@ def main():
     # Setup sidebar and get current params
     params = setup_sidebar()
     # Parse and validate peptide sequence
+
+    st.subheader("Fragment Ion Table")
     
     annotation, labile_mods = validate_peptide(params['peptide_sequence'])
     annot_with_labile_mods = annotation.copy()
@@ -123,11 +129,80 @@ def main():
             caption=caption,
             )
 
-        # Display results
         display_results(style_df, params)
+
+        page_loc = get_page_location()
+
+        st.caption("Share your results")
+        if page_loc and 'origin' in page_loc:
+            url_origin = page_loc['origin']
+            if st.button("Generate TinyURL", key="generate_tinyurl", type="primary"):
+                url_params = {k: st.query_params.get_all(k) for k in st.query_params.keys()}
+                page_url = f"{url_origin}{get_query_params_url(url_params)}"
+                short_url = shorten_url(page_url)
+
+
+                @st.dialog(title="Share your results")
+                def url_dialog(url):
+                    st.write(f"Shortened URL: {url}")
+
+                url_dialog(short_url)
+
+                
+
 
     except Exception as e:
         st.error(f"Error generating fragment table: {e}")
+        raise e
+
+
+import requests
+
+# app_utils.py
+from urllib.parse import quote_plus
+
+def get_query_params_url(params_dict):
+    """
+    Create url params from alist of parameters and a dictionary with values.
+
+    Args:
+        params_list (str) :
+            A list of parameters to get the value of from `params_dict`
+        parmas_dict (dict) :
+            A dict with values for the `parmas_list .
+        **kwargs :
+            Extra keyword args to add to the url
+    """
+    return "?" + "&".join(
+        [
+            f"{key}={quote_plus(str(value))}"
+            for key, values in params_dict.items()
+            for value in listify(values)
+        ]
+    )
+
+def listify(o=None):
+    if o is None:
+        res = []
+    elif isinstance(o, list):
+        res = o
+    elif isinstance(o, str):
+        res = [o]
+    else:
+        res = [o]
+    return res
+
+
+def shorten_url(url: str) -> str:
+    """Shorten a URL using TinyURL."""
+    api_url = f"http://tinyurl.com/api-create.php?url={url}"
+    
+    try:
+        response = requests.get(api_url)
+        response.raise_for_status()
+        return response.text
+    except requests.RequestException as e:
+        return f"Error: {e}"
 
 
 def initialize_query_params():
