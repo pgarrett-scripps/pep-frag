@@ -40,6 +40,7 @@ def style_fragment_table(
         fragment_types: List[str],
         charge: int,
         is_monoisotopic: bool,
+        mz: float,
         color_map: Optional[Dict[str, str]] = None,
         show_borders: bool = True,
         aa_col: Optional[str] = "Seq",
@@ -147,7 +148,8 @@ def style_fragment_table(
         row_padding=row_padding,
         column_padding=column_padding,
         min_mass=min_mass,
-        max_mass=max_mass
+        max_mass=max_mass,
+        mz=mz
     )
 
 
@@ -162,7 +164,8 @@ def apply_table_styling(
         row_padding: int,
         column_padding: int,
         min_mass: Optional[float],
-        max_mass: Optional[float]
+        max_mass: Optional[float],
+        mz: float
 ):
     """
     Apply styling to the fragment table
@@ -246,14 +249,14 @@ def apply_table_styling(
     if 'C' in df.columns and max_index_C is not None:
         # Create a closure to capture the current value of max_index_C
         def hide_max_value_C(val):
-            return 'color: transparent;' if df.loc[max_index_C, 'C'] == val else ''
+            return 'color: transparent; background-color: transparent;' if df.loc[max_index_C, 'C'] == val else ''
 
         styled_df = styled_df.map(hide_max_value_C, subset=['C'])
 
     if 'X' in df.columns and max_index_X is not None:
         # Create a closure to capture the current value of max_index_X
         def hide_max_value_X(val):
-            return 'color: transparent;' if df.loc[max_index_X, 'X'] == val else ''
+            return 'color: transparent; background-color: transparent;' if df.loc[max_index_X, 'X'] == val else ''
 
         styled_df = styled_df.map(hide_max_value_X, subset=['X'])
 

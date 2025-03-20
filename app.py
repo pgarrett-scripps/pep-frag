@@ -1,8 +1,5 @@
-from typing import List, Tuple, Optional, Dict
-import pandas as pd
 import streamlit as st
 import peptacular as pt
-import streamlit_permalink as stp
 
 from constants import (
     DEFAULT_PEPTIDE, DEFAULT_CHARGE, DEFAULT_MASS_TYPE, DEFAULT_FRAGMENT_TYPES,
@@ -12,7 +9,7 @@ from constants import (
     DEFAULT_X_COLOR, DEFAULT_Y_COLOR, DEFAULT_Z_COLOR
 )
 from ui_components import setup_sidebar, display_results
-from fragment_utils import style_fragment_table, create_fragment_table
+from fragment_utils import style_fragment_table
 
 def validate_peptide(peptide_sequence):
     """Parse and validate peptide sequence"""
@@ -52,9 +49,9 @@ def validate_peptide(peptide_sequence):
 
     # Calculate and validate mass
     try:
-        neutral_sequence_mass = pt.mass(annotation, monoisotopic=True, ion_type='p', charge=0)
-    except Exception as e:
-        st.error(f'Error calculating peptide mass: {e}')
+        _ = pt.mass(annotation, monoisotopic=True, ion_type='p', charge=0)
+    except Exception as err:
+        st.error(f'Error calculating peptide mass: {err}')
         st.stop()
 
     return annotation, labile_mods
@@ -80,10 +77,11 @@ def main():
     sequence_neutral_mass = pt.mass(annot_with_labile_mods, monoisotopic=params['is_monoisotopic'], ion_type='p', charge=0)
 
     #st.caption(annot_with_labile_mods.serialize(include_plus=True))
-    
+
+    precision = params['precision']
     caption = f"""
     <div style='text-align: center; padding: 10px; margin: 10px 0;'>
-        <div style='font-size: 1.2em; font-weight: bold; margin-bottom: 8px;'>
+        <div style='font-size: 1.0em; font-weight: bold; margin-bottom: 8px;'>
             {annot_with_labile_mods.serialize(include_plus=True)}
         </div>
         <div style='display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 8px;'>
@@ -92,16 +90,16 @@ def main():
                 {"Monoisotopic" if params["is_monoisotopic"] else "Average"}
             </div>
             <div>
-                <span style='font-weight: bold;'>Charge State:</span> 
+                <span style='font-weight: bold;'>Charge:</span> 
                 {params["charge"]}+
             </div>
             <div>
-                <span style='font-weight: bold;'>Sequence MZ:</span> 
-                {sequence_mz:.2f}
+                <span style='font-weight: bold;'>M/z:</span> 
+                {sequence_mz:.{precision}f}
             </div>
             <div>
-                <span style='font-weight: bold;'>Sequence Neutral Mass:</span> 
-                {sequence_neutral_mass:.2f}
+                <span style='font-weight: bold;'>Neutral Mass:</span> 
+                {sequence_neutral_mass:.{precision}f}
             </div>
         </div>
     </div>
@@ -114,6 +112,7 @@ def main():
             fragment_types=params['fragment_types'],
             charge=params['charge'],
             is_monoisotopic=params['is_monoisotopic'],
+            mz=sequence_mz,
             show_borders=params['show_borders'],
             decimal_places=params['precision'],
             row_padding=params['row_padding'],
@@ -121,7 +120,7 @@ def main():
             min_mass=params['min_mz'] if params['use_mass_bounds'] else None,
             max_mass=params['max_mz'] if params['use_mass_bounds'] else None,
             color_map=params['frag_colors'],
-            caption=caption
+            caption=caption,
             )
 
         # Display results
