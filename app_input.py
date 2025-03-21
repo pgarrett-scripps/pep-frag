@@ -176,14 +176,6 @@ def get_params() -> FragmentParams:
             c_color = stp.color_picker('c color', DEFAULT_C_COLOR, url_key='c_color')
             z_color = stp.color_picker('z color', DEFAULT_Z_COLOR, url_key='z_color')
 
-    if use_carbamidomethyl:
-        peptide_sequence = pt.condense_static_mods(
-            pt.add_mods(peptide_sequence, {'static': '[Carbamidomethyl]@C'}))
-
-    if condense_to_mass_notation:
-        peptide_sequence = pt.condense_to_mass_mods(peptide_sequence, include_plus=True,
-                                                    precision=precision)
-
     params = FragmentParams(
         peptide_sequence=peptide_sequence,
         charge=charge,

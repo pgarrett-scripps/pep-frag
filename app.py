@@ -60,6 +60,16 @@ with top_window:
                You can optionally use the Generate TinyURL button to create a shortened URL.**''', unsafe_allow_html=True)
 
     validate_peptide(params.peptide_sequence)
+
+
+    if params.use_carbamidomethyl:
+        params.peptide_sequence = pt.condense_static_mods(
+            pt.add_mods(params.peptide_sequence, {'static': '[Carbamidomethyl]@C'}))
+
+    if params.condense_to_mass_notation:
+        params.peptide_sequence = pt.condense_to_mass_mods(params.peptide_sequence, include_plus=True,
+                                                    precision=params.precision)
+
     annotation = pt.parse(params.peptide_sequence)
 
     # ensure that mass can be calculated
@@ -97,10 +107,6 @@ with top_window:
         # within container to allow for custom table id
         with st.container(key=TABLE_DIV_ID):
             display_results(style_df, params)
-            # Show mass bounds if enabled
-            if params.use_mass_bounds:
-                st.markdown(f'**M/z Bounds:** {params.min_mz} - {params.max_mz} *m/z*')
-
 
         if page_loc and 'origin' in page_loc:
             url_origin = page_loc['origin']
