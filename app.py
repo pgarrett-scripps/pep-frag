@@ -20,14 +20,26 @@ st.set_page_config(page_title="PepFrag", page_icon=":bomb:", layout="centered", 
 
 with st.sidebar:
 
-    st.title('PepFrag :bomb:')
-    # ([ProForma 2.0 compliant](https://github.com/HUPO-PSI/ProForma/blob/master/SpecDocument/ProForma_v2_draft15_February2022.pdf)).
-    st.caption(f"""
-    A peptide fragment ion calculator. Made with [peptacular {pt.__version__}](https://github.com/pgarrett-scripps/peptacular): [![DOI](https://zenodo.org/badge/591504879.svg)](https://doi.org/10.5281/zenodo.15054278)""")
-
-    st.caption('''If you use this in a publication, 
-               please cite: [![DOI](https://zenodo.org/badge/591504879.svg)](https://doi.org/10.5281/zenodo.15054278)''')
-    
+    st.markdown(f"""
+        <div style='text-align: center; padding: 15px; top-margin: 0px'>
+            <h3 style='margin: 0; font-size: 1.5em; color: #333;'>PepFrag: Proforma2.0-Compliant Peptide Fragment Ion Calculator</h3>
+            <p style='font-size: 1.1em; line-height: 1.6; color: #555;'>
+                Powered by 
+                <a href="https://github.com/pgarrett-scripps/peptacular" target="_blank" style='color: #007BFF; text-decoration: none;'>
+                    <strong>Peptacular</strong>
+                </a>. 
+                See the 
+                <a href="https://peptacular.readthedocs.io/en/latest/modules/getting_started.html#proforma-notation" 
+                target="_blank" style='color: #007BFF; text-decoration: none;'>
+                    Proforma Notation Docs
+                </a> for supported peptide syntax. To report any issues or suggest improvements, please visit the 
+                <a href="https://github.com/pgarrett-scripps/pep-frag" 
+                target="_blank" style='color: #007BFF; text-decoration: none;'>
+                    PepFrag Github Repo.
+                </a>
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
 
     peptide_help_msg = """
     **Peptide Sequence**: Enter the peptide sequence to fragment. Include modifications in square brackets.
@@ -40,17 +52,6 @@ top_window, bottom_window = st.container(), st.container()
 with bottom_window:
     page_loc = get_page_location()
     apply_centering_ccs(TABLE_DIV_ID)
-
-    st.markdown(
-        """
-    <style>
-    [data-testid="stMetricValue"] {
-        font-size: 25px;
-    }
-    </style>
-    """,
-        unsafe_allow_html=True,
-    )
 
 with top_window:
 
@@ -124,6 +125,7 @@ with top_window:
 
     with data_tab:
 
+        st.caption('Fragment Data')
         frag_df['in_bounds'] = True
 
         if params.use_mass_bounds:
@@ -139,3 +141,31 @@ with top_window:
                            type='primary',
                            on_click='ignore',
                            key='download_data')
+
+    st.divider()
+
+    st.markdown(f"""
+        <div style='display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-top: 0px solid #ddd;'>
+            <div style='text-align: left; font-size: 1.1em; color: #555;'>
+                <a href="https://github.com/pgarrett-scripps/pep-frag" target="_blank" 
+                   style='text-decoration: none; color: #007BFF; font-weight: bold;'>
+                    PepFrag
+                </a>
+                <a href="https://doi.org/10.5281/zenodo.15061824" target="_blank" style="margin-left: 12px;">
+                    <img src="https://zenodo.org/badge/948720227.svg" alt="DOI" 
+                         style="vertical-align: middle; height: 20px;">
+                </a>
+            </div>
+            <div style='text-align: right; font-size: 1.1em; color: #555;'>
+                <a href="https://github.com/pgarrett-scripps/peptacular" target="_blank" 
+                   style='text-decoration: none; color: #007BFF; font-weight: bold;'>
+                    Peptacular
+                </a>
+                <a href="https://doi.org/10.5281/zenodo.15054278" target="_blank" style="margin-left: 12px;">
+                    <img src="https://zenodo.org/badge/591504879.svg" alt="DOI" 
+                         style="vertical-align: middle; height: 20px;">
+                </a>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
+

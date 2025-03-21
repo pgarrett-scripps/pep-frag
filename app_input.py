@@ -95,16 +95,19 @@ def get_params() -> FragmentParams:
 
     # Additional options
     st.subheader('Additional Options', divider='grey')
-    
-    use_carbamidomethyl = stp.checkbox('Use carbamidomethyl C',
-                                       value=False,
-                                       help='Apply carbamidomethylation to cysteine residues',
-                                       key='use_carbamidomethyl')
-    condense_to_mass_notation = stp.checkbox('Condense to mass notation',
-                                             value=False,
-                                             help='Condense fragment ions to mass notation',
-                                             key='condense_to_mass_notation')
-    use_mass_bounds = stp.checkbox('Use Mass Bounds',
+
+    c1, c2 = st.columns(2)
+    with c1:
+        use_carbamidomethyl = stp.checkbox('Use carbamidomethyl C',
+                                           value=False,
+                                           help='Apply carbamidomethylation to cysteine residues',
+                                           key='use_carbamidomethyl')
+    with c2:
+        condense_to_mass_notation = stp.checkbox('Condense to mass notation',
+                                                 value=False,
+                                                 help='Condense fragment ions to mass notation',
+                                                 key='condense_to_mass_notation')
+    use_mass_bounds = stp.toggle('Use Mass Bounds',
                                    value=DEFAULT_USE_MASS_BOUNDS,
                                    help='Use mass bounds for fragment ions',
                                    key='mass_bounds')
