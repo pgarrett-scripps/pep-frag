@@ -23,10 +23,10 @@ with st.sidebar:
     st.title('PepFrag :bomb:')
     # ([ProForma 2.0 compliant](https://github.com/HUPO-PSI/ProForma/blob/master/SpecDocument/ProForma_v2_draft15_February2022.pdf)).
     st.caption(f"""
-    A peptide fragment ion calculator. Made with [peptacular {pt.__version__}](https://pypi.org/project/peptacular/): [![DOI](https://zenodo.org/badge/591504879.svg)](https://doi.org/10.5281/zenodo.15054278)""")
+    A peptide fragment ion calculator. Made with [peptacular {pt.__version__}](https://github.com/pgarrett-scripps/peptacular): [![DOI](https://zenodo.org/badge/591504879.svg)](https://doi.org/10.5281/zenodo.15054278)""")
 
     st.caption('''If you use this in a publication, 
-               please cite PepFrag: [![DOI](https://zenodo.org/badge/591504879.svg)](https://doi.org/10.5281/zenodo.15054278)''')
+               please cite: [![DOI](https://zenodo.org/badge/591504879.svg)](https://doi.org/10.5281/zenodo.15054278)''')
     
 
     peptide_help_msg = """
@@ -34,14 +34,6 @@ with st.sidebar:
     """
 
     params = get_params()
-
-
-if params.use_carbamidomethyl:
-    peptide_sequence = pt.condense_static_mods(pt.add_mods(params.peptide_sequence, {'static': '[Carbamidomethyl]@C'}))
-
-if params.condense_to_mass_notation:
-    peptide_sequence = pt.condense_to_mass_mods(params.peptide_sequence, include_plus=True, precision=params.precision)
-
 
 top_window, bottom_window = st.container(), st.container()
 
@@ -64,8 +56,8 @@ with top_window:
 
     title_c, _, button_c = st.columns([2, 1, 1])
     title_c.header("PepFrag Results")
-    st.caption(f'''This pages URL automatically updates with your input, and can be shared with others. 
-               You can optionally use the Generate TinyURL button to create a shortened URL.''', unsafe_allow_html=True)
+    st.caption(f'''**This pages URL automatically updates with your input, and can be shared with others. 
+               You can optionally use the Generate TinyURL button to create a shortened URL.**''', unsafe_allow_html=True)
 
     validate_peptide(params.peptide_sequence)
     annotation = pt.parse(params.peptide_sequence)
