@@ -21,10 +21,13 @@ st.set_page_config(page_title="PepFrag", page_icon=":bomb:", layout="centered", 
 with st.sidebar:
 
     st.title('PepFrag :bomb:')
-    st.caption("""
-    A peptide fragment ion calculator ([ProForma 2.0 compliant](https://github.com/HUPO-PSI/ProForma/blob/master/SpecDocument/ProForma_v2_draft15_February2022.pdf)).""")
+    # ([ProForma 2.0 compliant](https://github.com/HUPO-PSI/ProForma/blob/master/SpecDocument/ProForma_v2_draft15_February2022.pdf)).
+    st.caption(f"""
+    A peptide fragment ion calculator. Made with [peptacular {pt.__version__}](https://pypi.org/project/peptacular/): [![DOI](https://zenodo.org/badge/591504879.svg)](https://doi.org/10.5281/zenodo.15054278)""")
 
-    st.caption('''**This pages URL automatically updates with your input, and can be shared with others.**''')
+    st.caption('''If you use this in a publication, 
+               please cite PepFrag: [![DOI](https://zenodo.org/badge/591504879.svg)](https://doi.org/10.5281/zenodo.15054278)''')
+    
 
     peptide_help_msg = """
     **Peptide Sequence**: Enter the peptide sequence to fragment. Include modifications in square brackets.
@@ -61,7 +64,8 @@ with top_window:
 
     title_c, _, button_c = st.columns([2, 1, 1])
     title_c.header("PepFrag Results")
-    st.caption(f'Made with [peptacular {pt.__version__}](https://pypi.org/project/peptacular/)')
+    st.caption(f'''This pages URL automatically updates with your input, and can be shared with others. 
+               You can optionally use the Generate TinyURL button to create a shortened URL.''', unsafe_allow_html=True)
 
     validate_peptide(params.peptide_sequence)
     annotation = pt.parse(params.peptide_sequence)
