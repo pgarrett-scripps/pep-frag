@@ -40,7 +40,6 @@ def style_fragment_table(
         fragment_types: List[str],
         charge: int,
         is_monoisotopic: bool,
-        mz: float,
         color_map: Optional[Dict[str, str]] = None,
         show_borders: bool = True,
         aa_col: Optional[str] = "Seq",
@@ -124,6 +123,7 @@ def style_fragment_table(
 
     # Create DataFrame
     df = pd.DataFrame(data)
+    
 
     forward_cols = [col for col in df.columns if 'A' == col or 'B' == col or 'C' == col]
     reverse_cols = [col for col in df.columns if 'X' == col or 'Y' == col or 'Z' == col]
@@ -149,8 +149,7 @@ def style_fragment_table(
         column_padding=column_padding,
         min_mass=min_mass,
         max_mass=max_mass,
-        mz=mz
-    )
+    ), fragments
 
 
 def apply_table_styling(
@@ -165,7 +164,6 @@ def apply_table_styling(
         column_padding: int,
         min_mass: Optional[float],
         max_mass: Optional[float],
-        mz: float
 ):
     """
     Apply styling to the fragment table
