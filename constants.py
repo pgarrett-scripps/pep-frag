@@ -1,5 +1,5 @@
 # Default values for the application
-DEFAULT_PEPTIDE = '[Acetyl]-PEPTIDES[+123]'
+DEFAULT_PEPTIDE = '[Acetyl]-PEPT[+123]IDES'
 DEFAULT_CHARGE = 2
 DEFAULT_MASS_TYPE = 'monoisotopic'
 DEFAULT_FRAGMENT_TYPES = {'a','b', 'x', 'y'}
