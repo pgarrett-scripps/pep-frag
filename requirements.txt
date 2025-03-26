@@ -1,5 +1,5 @@
 peptacular==2.2.0
 streamlit==1.43.0
-streamlit-permalink @ git+https://github.com/pgarrett-scripps/streamlit-permalink@dda1482
+streamlit-permalink @ git+https://github.com/pgarrett-scripps/streamlit-permalink
 streamlit-js-eval==0.1.7
 requests==2.32.3

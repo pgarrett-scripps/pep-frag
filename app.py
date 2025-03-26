@@ -65,7 +65,7 @@ with top_window:
 
     if params.use_carbamidomethyl:
         params.peptide_sequence = pt.condense_static_mods(
-            pt.add_mods(params.peptide_sequence, {'static': '[Carbamidomethyl]@C'}))
+            pt.add_mods(params.peptide_sequence, {'static': '[Carbamidomethyl]@C'}), include_plus=True)
 
     if params.condense_to_mass_notation:
         params.peptide_sequence = pt.condense_to_mass_mods(params.peptide_sequence, include_plus=True,
