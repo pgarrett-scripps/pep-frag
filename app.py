@@ -6,28 +6,45 @@ from streamlit_js_eval import get_page_location
 from app_input import get_params
 
 from fragment_utils import style_fragment_table
-from utils import (apply_centering_ccs, 
-                   create_caption_vertical, 
-                   create_caption_horizontal, 
-                   get_query_params_url, 
-                   shorten_url, 
-                   validate_peptide, 
+from utils import (apply_centering_ccs,
+                   create_caption_vertical,
+                   create_caption_horizontal,
+                   get_query_params_url,
+                   shorten_url,
+                   validate_peptide,
                    display_results)
 
 TABLE_DIV_ID = 'custom-table-id'
 
-st.set_page_config(page_title="PepFrag", page_icon=":bomb:", layout="centered", initial_sidebar_state="expanded")
+st.set_page_config(page_title="PepFrag", page_icon=":bomb:",
+                   layout="centered", initial_sidebar_state="expanded")
+
+if 'page_loc' not in st.session_state or st.session_state.page_loc is None:
+    page_loc = get_page_location()
+    if 'page_loc' not in st.session_state and page_loc is not None:
+        st.session_state.page_loc = page_loc
+
+
+st.markdown(
+    """
+    <style>
+        section[data-testid="stSidebar"] {
+            width: 600px !important; # Set the width to your desired value
+        }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 with st.sidebar:
 
     st.markdown(f"""
         <div style='text-align: center; padding: 15px; top-margin: 0px'>
-            <h3 style='margin: 0; font-size: 1.5em; color: #333;'>PepFrag: Proforma2.0-Compliant Peptide Fragment Ion Calculator</h3>
+            <h3 style='margin: 0; font-size: 1.5em; color: #333;'>PepFrag 💣</h3>
             <p style='font-size: 1.1em; line-height: 1.6; color: #555;'>
-                Powered by 
-                <a href="https://github.com/pgarrett-scripps/peptacular" target="_blank" style='color: #007BFF; text-decoration: none;'>
-                    <strong>Peptacular</strong>
-                </a>. 
+                A Proforma2.0-Compliant Peptide Fragment Ion Calculator. 
+            </p>
+            <p style='font-size: 1.0em; line-height: 1.6; color: #555;'>
                 See the 
                 <a href="https://peptacular.readthedocs.io/en/latest/modules/getting_started.html#proforma-notation" 
                 target="_blank" style='color: #007BFF; text-decoration: none;'>
@@ -35,8 +52,12 @@ with st.sidebar:
                 </a> for supported peptide syntax. To report any issues or suggest improvements, please visit the 
                 <a href="https://github.com/pgarrett-scripps/pep-frag" 
                 target="_blank" style='color: #007BFF; text-decoration: none;'>
-                    PepFrag Github Repo.
+                    PepFrag Github Repo. 
                 </a>
+                Powered by 
+                <a href="https://github.com/pgarrett-scripps/peptacular" target="_blank" style='color: #007BFF; text-decoration: none;'>
+                    <strong>Peptacular</strong>
+                </a>. 
             </p>
         </div>
     """, unsafe_allow_html=True)
@@ -50,18 +71,35 @@ with st.sidebar:
 top_window, bottom_window = st.container(), st.container()
 
 with bottom_window:
-    page_loc = get_page_location()
     apply_centering_ccs(TABLE_DIV_ID)
 
 with top_window:
 
-    title_c, _, button_c = st.columns([2, 1, 1])
-    title_c.header("PepFrag Results")
-    st.caption(f'''**This pages URL automatically updates with your input, and can be shared with others. 
-               You can optionally use the Generate TinyURL button to create a shortened URL.**''', unsafe_allow_html=True)
+    if 'page_loc' in st.session_state and st.session_state.page_loc and 'origin' in st.session_state.page_loc:
+        url_origin = st.session_state.page_loc['origin']
+
+        @st.fragment
+        def url_fragment():
+
+            title_c, _, button_c = st.columns([2, 1, 1])
+            title_c.header("PepFrag Results")
+
+            st.caption(
+                '''**This pages URL automatically updates with your input, and can be shared with others. 
+            You can also click on the 'Generate TinyURL' button to create a shortened URL.**''',
+                unsafe_allow_html=True,
+            )
+
+            if button_c.button("Generate TinyURL", key="generate_tinyurl", type="primary"):
+                url_params = {k: st.query_params.get_all(
+                    k) for k in st.query_params.keys()}
+                page_url = f"{url_origin}{get_query_params_url(url_params)}"
+                short_url = shorten_url(page_url)
+                st.caption(f"Shortened URL: {short_url}")
+
+        url_fragment()
 
     validate_peptide(params.peptide_sequence)
-
 
     if params.use_carbamidomethyl:
         params.peptide_sequence = pt.condense_static_mods(
@@ -69,7 +107,7 @@ with top_window:
 
     if params.condense_to_mass_notation:
         params.peptide_sequence = pt.condense_to_mass_mods(params.peptide_sequence, include_plus=True,
-                                                    precision=params.precision)
+                                                           precision=params.precision)
 
     annotation = pt.parse(params.peptide_sequence)
 
@@ -79,7 +117,7 @@ with top_window:
     except Exception as err:
         st.error(f'Error calculating peptide mass: {err}')
         st.stop()
-        
+
     annot_without_labile_mods = annotation.copy()
     annot_without_labile_mods.pop_labile_mods()
 
@@ -96,11 +134,12 @@ with top_window:
         min_mass=params.min_mz if params.use_mass_bounds else None,
         max_mass=params.max_mz if params.use_mass_bounds else None,
         color_map=params.frag_colors,
-        caption=create_caption_horizontal(params) if params.is_horizontal_caption else create_caption_vertical(params),
-        )
-    
+        caption=create_caption_horizontal(
+            params) if params.is_horizontal_caption else create_caption_vertical(params),
+    )
+
     frag_df = pd.DataFrame([fragment.to_dict() for fragment in fragments])
-    
+
     frag_tab, data_tab = st.tabs(['Table', 'Data'])
 
     with frag_tab:
@@ -108,20 +147,6 @@ with top_window:
         # within container to allow for custom table id
         with st.container(key=TABLE_DIV_ID):
             display_results(style_df, params)
-
-        if page_loc and 'origin' in page_loc:
-            url_origin = page_loc['origin']
-            if button_c.button("Generate TinyURL", key="generate_tinyurl", type="primary"):
-                url_params = {k: st.query_params.get_all(k) for k in st.query_params.keys()}
-                page_url = f"{url_origin}{get_query_params_url(url_params)}"
-                short_url = shorten_url(page_url)
-
-
-                @st.dialog(title="Share your results")
-                def url_dialog(url):
-                    st.write(f"Shortened URL: {url}")
-
-                url_dialog(short_url)
 
     with data_tab:
 
@@ -134,10 +159,10 @@ with top_window:
 
         st.dataframe(frag_df, hide_index=True)
 
-        st.download_button(label='Download Data', 
-                           data=frag_df.to_csv(index=False), 
-                           file_name=f'{annotation._sequence}_fragment_data.csv', 
-                           use_container_width=True, 
+        st.download_button(label='Download Data',
+                           data=frag_df.to_csv(index=False),
+                           file_name=f'{annotation._sequence}_fragment_data.csv',
+                           use_container_width=True,
                            type='primary',
                            on_click='ignore',
                            key='download_data')
@@ -168,4 +193,3 @@ with top_window:
             </div>
         </div>
     """, unsafe_allow_html=True)
-
