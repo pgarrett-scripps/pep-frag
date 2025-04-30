@@ -1,6 +1,6 @@
 {
   "name": "Python Streamlit Development",
-  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
   "features": {
     "ghcr.io/devcontainers/features/python:1": {
       "installTools": true,
@@ -14,10 +14,13 @@
       "extensions": [
         "ms-python.python",
         "ms-python.black-formatter",
+        "github.copilot",
+        "github.copilot-chat",
+        "ms-azuretools.vscode-docker"
       ],
       "settings": {
         "python.formatting.provider": "black",
-        "editor.formatOnSave": true,
+        "editor.formatOnSave": false,
         "editor.codeActionsOnSave": {
           "source.organizeImports": true
         }
