@@ -1,5 +1,8 @@
 FROM python:3.12-slim
 
+# Create a non-root user to run the application
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+
 WORKDIR /usr/src/app
 
 # Install git and other dependencies
@@ -17,18 +20,38 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
+# Set proper permissions
+RUN chown -R appuser:appuser /usr/src/app
+
 # Set default values for environment variables
 ENV PROJECT_TITLE="Pep-Frag" \
     PROJECT_DESCRIPTION="A Peptide Fragment Ion Calculator" \
-    PROJECT_IMAGE_URL="https://example.com/image.jpg"
+    PROJECT_IMAGE_URL="https://github.com/pgarrett-scripps/pep-frag/blob/main/images/screenshot.png?raw=true" \
+    GOOGLE_SITE_VERIFICATION_CODE="ZCyZCLoTV-n_EPpw68kWJmo19D8f2-NebLfnsZZXDKs"
 
 # Find streamlit's static directory and modify the index.html file
 RUN STREAMLIT_PATH=$(python -c "import streamlit; import os; print(os.path.dirname(streamlit.__file__))") && \
     INDEX_PATH="$STREAMLIT_PATH/static/index.html" && \
     echo "Streamlit index.html found at: $INDEX_PATH" && \
     cp "$INDEX_PATH" "$INDEX_PATH.backup" && \
-    sed -i "s|<head>|<head>\n    <!-- Primary Meta Tags -->\n    <meta\n      name=\"description\"\n      content=\"$PROJECT_DESCRIPTION\"\n    />\n\n    <!-- Open Graph / Facebook -->\n    <meta property=\"og:type\" content=\"website\" />\n    <meta property=\"og:url\" content=\"https://metatags.io/\" />\n    <meta property=\"og:title\" content=\"$PROJECT_TITLE\" />\n    <meta\n      property=\"og:description\"\n      content=\"$PROJECT_DESCRIPTION\"\n    />\n    <meta\n      property=\"og:image\"\n      content=\"$PROJECT_IMAGE_URL\"\n    />\n\n    <!-- Twitter -->\n    <meta property=\"twitter:card\" content=\"summary_large_image\" />\n    <meta property=\"twitter:url\" content=\"https://metatags.io/\" />\n    <meta property=\"twitter:title\" content=\"$PROJECT_TITLE\" />\n    <meta\n      property=\"twitter:description\"\n      content=\"$PROJECT_DESCRIPTION\"\n    />\n    <meta\n      property=\"twitter:image\"\n      content=\"$PROJECT_IMAGE_URL\"\n    />|" "$INDEX_PATH"
+    sed -i "s|<head>|<head>\n    <!-- Google Site Verification -->\n    <meta name=\"google-site-verification\" content=\"$GOOGLE_SITE_VERIFICATION_CODE\" />\n\n    <!-- Primary Meta Tags -->\n    <meta\n      name=\"description\"\n      content=\"$PROJECT_DESCRIPTION\"\n    />\n\n    <!-- Open Graph / Facebook -->\n    <meta property=\"og:type\" content=\"website\" />\n    <meta property=\"og:url\" content=\"https://metatags.io/\" />\n    <meta property=\"og:title\" content=\"$PROJECT_TITLE\" />\n    <meta\n      property=\"og:description\"\n      content=\"$PROJECT_DESCRIPTION\"\n    />\n    <meta\n      property=\"og:image\"\n      content=\"$PROJECT_IMAGE_URL\"\n    />\n\n    <!-- Twitter -->\n    <meta property=\"twitter:card\" content=\"summary_large_image\" />\n    <meta property=\"twitter:url\" content=\"https://metatags.io/\" />\n    <meta property=\"twitter:title\" content=\"$PROJECT_TITLE\" />\n    <meta\n      property=\"twitter:description\"\n      content=\"$PROJECT_DESCRIPTION\"\n    />\n    <meta\n      property=\"twitter:image\"\n      content=\"$PROJECT_IMAGE_URL\"\n    />|" "$INDEX_PATH"
 
+# image metadata
+LABEL org.opencontainers.image.vendor="pgarrett-scripps" \
+      org.opencontainers.image.title="Pep-Frag" \
+      org.opencontainers.image.description="A Peptide Fragment Ion Calculator" \
+      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.created="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+
+# Add streamlit health check
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+  CMD curl --fail http://localhost:8501/_stcore/health || exit 1
+
+# Expose the port that Streamlit runs on
 EXPOSE 8501
 
+# Switch to non-root user
+USER appuser
+
+# Start the Streamlit application
 CMD ["streamlit", "run", "app.py", "--server.port", "8501"]
