@@ -1,7 +1,6 @@
 import pandas as pd
 import streamlit as st
 import peptacular as pt
-from streamlit_js_eval import get_page_location
 
 from app_input import get_params
 
@@ -18,11 +17,6 @@ TABLE_DIV_ID = 'custom-table-id'
 
 st.set_page_config(page_title="PepFrag", page_icon=":bomb:",
                    layout="centered", initial_sidebar_state="expanded")
-
-if 'page_loc' not in st.session_state or st.session_state.page_loc is None:
-    page_loc = get_page_location()
-    if 'page_loc' not in st.session_state and page_loc is not None:
-        st.session_state.page_loc = page_loc
 
 
 st.markdown(
@@ -76,7 +70,6 @@ with bottom_window:
 with top_window:
 
     if 'page_loc' in st.session_state and st.session_state.page_loc and 'origin' in st.session_state.page_loc:
-        url_origin = st.session_state.page_loc['origin']
 
         @st.fragment
         def url_fragment():
@@ -93,7 +86,7 @@ with top_window:
             if button_c.button("Generate TinyURL", key="generate_tinyurl", type="primary"):
                 url_params = {k: st.query_params.get_all(
                     k) for k in st.query_params.keys()}
-                page_url = f"{url_origin}{get_query_params_url(url_params)}"
+                page_url = f"{st.context.url}{get_query_params_url(url_params)}"
                 short_url = shorten_url(page_url)
                 st.caption(f"Shortened URL: {short_url}")
 
