@@ -1,5 +1,6 @@
 import pandas as pd
 import streamlit as st
+import streamlit_permalink as stp
 import peptacular as pt
 
 from app_input import get_params
@@ -69,26 +70,21 @@ with bottom_window:
 
 with top_window:
 
-    if 'page_loc' in st.session_state and st.session_state.page_loc and 'origin' in st.session_state.page_loc:
+    @st.fragment
+    def url_fragment():
 
-        @st.fragment
-        def url_fragment():
+        title_c, _, button_c = st.columns([2, 1, 1])
+        title_c.header("PepFrag Results")
 
-            title_c, _, button_c = st.columns([2, 1, 1])
-            title_c.header("PepFrag Results")
+        st.caption(
+            '''**This pages URL automatically updates with your input, and can be shared with others. 
+        You can also click on the 'Generate TinyURL' button to create a shortened URL.**''',
+            unsafe_allow_html=True,
+        )
 
-            st.caption(
-                '''**This pages URL automatically updates with your input, and can be shared with others. 
-            You can also click on the 'Generate TinyURL' button to create a shortened URL.**''',
-                unsafe_allow_html=True,
-            )
-
-            if button_c.button("Generate TinyURL", key="generate_tinyurl", type="primary"):
-                url_params = {k: st.query_params.get_all(
-                    k) for k in st.query_params.keys()}
-                page_url = f"{st.context.url}{get_query_params_url(url_params)}"
-                short_url = shorten_url(page_url)
-                st.caption(f"Shortened URL: {short_url}")
+        if button_c.button("Generate TinyURL", key="generate_tinyurl", type="primary"):
+            short_url = shorten_url(stp.get_page_url())
+            st.caption(f"Shortened URL: {short_url}")
 
         url_fragment()
 
@@ -133,7 +129,7 @@ with top_window:
 
     frag_df = pd.DataFrame([fragment.to_dict() for fragment in fragments])
 
-    frag_tab, data_tab = st.tabs(['Table', 'Data'])
+    frag_tab, data_tab, copy_tab = st.tabs(['Table', 'Data', 'Copy'])
 
     with frag_tab:
 
@@ -159,6 +155,10 @@ with top_window:
                            type='primary',
                            on_click='ignore',
                            key='download_data')
+
+    with copy_tab:
+        st.caption('Copy Data')
+        st.data_editor(style_df, hide_index=True)
 
     st.divider()
 
