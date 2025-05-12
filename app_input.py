@@ -3,8 +3,6 @@ from typing import Literal, Optional
 import streamlit as st
 import streamlit as st
 import streamlit_permalink as stp
-from streamlit_js_eval import get_page_location
-import peptacular as pt
 
 from constants import (DEFAULT_PEPTIDE, DEFAULT_CHARGE, DEFAULT_MASS_TYPE, DEFAULT_FRAGMENT_TYPES,
     DEFAULT_USE_MASS_BOUNDS, DEFAULT_MIN_MZ, DEFAULT_MAX_MZ, DEFAULT_PRECISION,

@@ -9,7 +9,6 @@ from fragment_utils import style_fragment_table
 from utils import (apply_centering_ccs,
                    create_caption_vertical,
                    create_caption_horizontal,
-                   get_query_params_url,
                    shorten_url,
                    validate_peptide,
                    display_results)
@@ -86,7 +85,7 @@ with top_window:
             short_url = shorten_url(stp.get_page_url())
             st.caption(f"Shortened URL: {short_url}")
 
-        url_fragment()
+    url_fragment()
 
     validate_peptide(params.peptide_sequence)
 
