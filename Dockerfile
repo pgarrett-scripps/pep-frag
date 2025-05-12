@@ -36,12 +36,10 @@ RUN STREAMLIT_PATH=$(python -c "import streamlit; import os; print(os.path.dirna
     cp "$INDEX_PATH" "$INDEX_PATH.backup" && \
     sed -i "s|<head>|<head>\n    <!-- Google Site Verification -->\n    <meta name=\"google-site-verification\" content=\"$GOOGLE_SITE_VERIFICATION_CODE\" />\n\n    <!-- Primary Meta Tags -->\n    <meta\n      name=\"description\"\n      content=\"$PROJECT_DESCRIPTION\"\n    />\n\n    <!-- Open Graph / Facebook -->\n    <meta property=\"og:type\" content=\"website\" />\n    <meta property=\"og:url\" content=\"https://metatags.io/\" />\n    <meta property=\"og:title\" content=\"$PROJECT_TITLE\" />\n    <meta\n      property=\"og:description\"\n      content=\"$PROJECT_DESCRIPTION\"\n    />\n    <meta\n      property=\"og:image\"\n      content=\"$PROJECT_IMAGE_URL\"\n    />\n\n    <!-- Twitter -->\n    <meta property=\"twitter:card\" content=\"summary_large_image\" />\n    <meta property=\"twitter:url\" content=\"https://metatags.io/\" />\n    <meta property=\"twitter:title\" content=\"$PROJECT_TITLE\" />\n    <meta\n      property=\"twitter:description\"\n      content=\"$PROJECT_DESCRIPTION\"\n    />\n    <meta\n      property=\"twitter:image\"\n      content=\"$PROJECT_IMAGE_URL\"\n    />|" "$INDEX_PATH"
 
-# image metadata
-LABEL org.opencontainers.image.vendor="pgarrett-scripps" \
-      org.opencontainers.image.title="Pep-Frag" \
-      org.opencontainers.image.description="A Peptide Fragment Ion Calculator" \
-      org.opencontainers.image.licenses="MIT" \
-      org.opencontainers.image.created="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+# Metadata labels
+LABEL maintainer="Patrick Garrett <pgarrett@scripps.edu>"
+LABEL version="1.0"
+LABEL description="Streamlit Application for calculating a peptide's fragment ions"
 
 # Add streamlit health check
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
