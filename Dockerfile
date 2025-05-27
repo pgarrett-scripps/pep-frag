@@ -3,6 +3,10 @@ FROM python:3.12-slim
 # Create a non-root user to run the application
 RUN groupadd -r appuser && useradd -r -g appuser appuser
 
+# Create and properly configure the home directory for appuser
+RUN mkdir -p /home/appuser && \
+    chown -R appuser:appuser /home/appuser
+
 WORKDIR /usr/src/app
 
 # Install git and other dependencies
@@ -53,7 +57,8 @@ EXPOSE 8501
 USER appuser
 
 ENV STREAMLIT_SERVER_PORT="8501" \
-    STREAMLIT_SERVER_BASE_URL=""
+    STREAMLIT_SERVER_BASE_URL="" \
+    HOME="/home/appuser"
 
 # Start the Streamlit application
 CMD ["streamlit", "run", "app.py"]
