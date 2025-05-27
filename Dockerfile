@@ -34,6 +34,10 @@ ENV PROJECT_TITLE="Pep-Frag" \
     GOOGLE_SITE_VERIFICATION_CODE="ZCyZCLoTV-n_EPpw68kWJmo19D8f2-NebLfnsZZXDKs"
 
 
+ENV STREAMLIT_SERVER_PORT="8501" \
+    STREAMLIT_SERVER_BASE_URL_PATH="" \
+    HOME="/home/appuser"
+
 # Find streamlit's static directory and modify the index.html file
 RUN STREAMLIT_PATH=$(python -c "import streamlit; import os; print(os.path.dirname(streamlit.__file__))") && \
     INDEX_PATH="$STREAMLIT_PATH/static/index.html" && \
@@ -46,19 +50,15 @@ LABEL maintainer="Patrick Garrett <pgarrett@scripps.edu>"
 LABEL version="1.0"
 LABEL description="Streamlit Application for calculating a peptide's fragment ions"
 
-# Add streamlit health check
+# Add streamlit health check using environment variables
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-  CMD curl --fail http://127.0.0.1:8501/_stcore/health || exit 1
+    CMD curl --fail "http://127.0.0.1:${STREAMLIT_SERVER_PORT}${STREAMLIT_SERVER_BASE_URL_PATH}/_stcore/health" || exit 1
 
 # Expose the port that Streamlit runs on
 EXPOSE 8501
 
 # Switch to non-root user
 USER appuser
-
-ENV STREAMLIT_SERVER_PORT="8501" \
-    STREAMLIT_SERVER_BASE_URL_PATH="" \
-    HOME="/home/appuser"
 
 # Start the Streamlit application
 CMD ["streamlit", "run", "app.py"]
