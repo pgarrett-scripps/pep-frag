@@ -31,7 +31,11 @@ RUN chown -R appuser:appuser /usr/src/app
 ENV PROJECT_TITLE="Pep-Frag" \
     PROJECT_DESCRIPTION="A Peptide Fragment Ion Calculator" \
     PROJECT_IMAGE_URL="https://github.com/pgarrett-scripps/pep-frag/blob/main/images/screenshot.png?raw=true" \
-    GOOGLE_SITE_VERIFICATION_CODE="ZCyZCLoTV-n_EPpw68kWJmo19D8f2-NebLfnsZZXDKs" \
+    GOOGLE_SITE_VERIFICATION_CODE="ZCyZCLoTV-n_EPpw68kWJmo19D8f2-NebLfnsZZXDKs"
+
+
+ENV STREAMLIT_SERVER_PORT="8501" \
+    STREAMLIT_SERVER_BASE_URL_PATH="" \
     HOME="/home/appuser"
 
 # Find streamlit's static directory and modify the index.html file
@@ -48,7 +52,7 @@ LABEL description="Streamlit Application for calculating a peptide's fragment io
 
 # Add streamlit health check using environment variables
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-    CMD curl --fail http://127.0.0.1:8501/_stcore/health || exit 1
+    CMD curl --fail "http://127.0.0.1:${STREAMLIT_SERVER_PORT}${STREAMLIT_SERVER_BASE_URL_PATH}/_stcore/health" || exit 1
 
 # Expose the port that Streamlit runs on
 EXPOSE 8501
