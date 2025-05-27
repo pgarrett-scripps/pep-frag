@@ -36,6 +36,11 @@ ENV PROJECT_TITLE="Pep-Frag" \
 
 ENV STREAMLIT_SERVER_PORT="8501" \
     STREAMLIT_SERVER_BASE_URL_PATH="" \
+    STREAMLIT_ENABLE_COORS="true" \
+    STREAMLIT_SERVER_ENABLE_CORS="true" \
+    STREAMLIT_SERVER_ENABLE_XSRF_PROTECTION="true" \
+    STREAMLIT_SERVER_HEADLESS="true" \
+    STREAMLIT_SERVER_MAX_UPLOAD_SIZE="200" \
     HOME="/home/appuser"
 
 # Find streamlit's static directory and modify the index.html file
