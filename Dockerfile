@@ -57,7 +57,7 @@ EXPOSE 8501
 USER appuser
 
 ENV STREAMLIT_SERVER_PORT="8501" \
-    STREAMLIT_SERVER_BASE_URL="" \
+    STREAMLIT_SERVER_BASE_URL_PATH="" \
     HOME="/home/appuser"
 
 # Start the Streamlit application
