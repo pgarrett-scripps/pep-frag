@@ -3,11 +3,10 @@ FROM python:3.12-slim
 # Create a non-root user to run the application
 RUN groupadd -r appuser && useradd -r -g appuser appuser
 
-# Create and properly configure the home directory for appuser
-RUN mkdir -p /home/appuser && \
-    chown -R appuser:appuser /home/appuser
-
 WORKDIR /usr/src/app
+
+# Set proper permissions
+RUN chown -R appuser:appuser /usr/src/app
 
 # Install git and other dependencies
 RUN apt-get update && \
@@ -23,9 +22,6 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
-
-# Set proper permissions
-RUN chown -R appuser:appuser /usr/src/app
 
 # Set default values for environment variables
 ENV PROJECT_TITLE="Pep-Frag" \
