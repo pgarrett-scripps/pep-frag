@@ -3,10 +3,7 @@ FROM python:3.12-slim
 # Create a non-root user to run the application
 RUN groupadd -r appuser && useradd -r -g appuser appuser
 
-WORKDIR /usr/src/app
-
-# Set proper permissions
-RUN chown -R appuser:appuser /usr/src/app
+WORKDIR /app
 
 # Install git and other dependencies
 RUN apt-get update && \
@@ -62,6 +59,9 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
 
 # Expose the port that Streamlit runs on
 EXPOSE 8501
+
+# Set proper permissions
+RUN chown -R appuser:appuser /app
 
 # Switch to non-root user
 USER appuser
