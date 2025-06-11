@@ -24,7 +24,7 @@ COPY . .
 ENV PROJECT_TITLE="Pep-Frag" \
     PROJECT_DESCRIPTION="A Peptide Fragment Ion Calculator" \
     PROJECT_IMAGE_URL="https://github.com/pgarrett-scripps/pep-frag/blob/main/images/screenshot.png?raw=true" \
-    GOOGLE_SITE_VERIFICATION_CODE="ZCyZCLoTV-n_EPpw68kWJmo19D8f2-NebLfnsZZXDKs"
+    GOOGLE_SITE_VERIFICATION_CODE="iwWmQAEGgn2bJq35Hj9TF_4RgPjjfyrlCGNBfLiHn2w"
 
 
 ENV STREAMLIT_SERVER_PORT="8501" \
