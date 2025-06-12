@@ -2,14 +2,12 @@ import pandas as pd
 import streamlit as st
 import streamlit_permalink as stp
 import peptacular as pt
-
 from app_input import get_params
 
 from fragment_utils import style_fragment_table
-from utils import (apply_centering_ccs,
+from utils import (apply_centering_ccs, apply_expanded_sidebar,
                    create_caption_vertical,
-                   create_caption_horizontal,
-                   shorten_url,
+                   create_caption_horizontal, display_header,
                    validate_peptide,
                    display_results)
 
@@ -19,47 +17,11 @@ st.set_page_config(page_title="PepFrag", page_icon=":bomb:",
                    layout="centered", initial_sidebar_state="expanded")
 
 
-st.markdown(
-    """
-    <style>
-        section[data-testid="stSidebar"] {
-            width: 600px !important; # Set the width to your desired value
-        }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+apply_expanded_sidebar()
 
 with st.sidebar:
 
-    st.markdown(f"""
-        <div style='text-align: center; padding: 15px; top-margin: 0px'>
-            <h3 style='margin: 0; font-size: 1.5em; color: #333;'>PepFrag 💣</h3>
-            <p style='font-size: 1.1em; line-height: 1.6; color: #555;'>
-                A Proforma2.0-Compliant Peptide Fragment Ion Calculator. 
-            </p>
-            <p style='font-size: 1.0em; line-height: 1.6; color: #555;'>
-                See the 
-                <a href="https://peptacular.readthedocs.io/en/latest/modules/getting_started.html#proforma-notation" 
-                target="_blank" style='color: #007BFF; text-decoration: none;'>
-                    Proforma Notation Docs
-                </a> for supported peptide syntax. To report any issues or suggest improvements, please visit the 
-                <a href="https://github.com/pgarrett-scripps/pep-frag" 
-                target="_blank" style='color: #007BFF; text-decoration: none;'>
-                    PepFrag Github Repo. 
-                </a>
-                Powered by 
-                <a href="https://github.com/pgarrett-scripps/peptacular" target="_blank" style='color: #007BFF; text-decoration: none;'>
-                    <strong>Peptacular</strong>
-                </a>. 
-            </p>
-        </div>
-    """, unsafe_allow_html=True)
-
-    peptide_help_msg = """
-    **Peptide Sequence**: Enter the peptide sequence to fragment. Include modifications in square brackets.
-    """
-
+    display_header()
     params = get_params()
 
 top_window, bottom_window = st.container(), st.container()
@@ -72,18 +34,13 @@ with top_window:
     @st.fragment
     def url_fragment():
 
-        title_c, _, button_c = st.columns([2, 1, 1])
-        title_c.header("PepFrag Results")
+        st.header("PepFrag Results")
 
         st.caption(
-            '''**This pages URL automatically updates with your input, and can be shared with others. 
-        You can also click on the 'Generate TinyURL' button to create a shortened URL.**''',
+            '''**This pages URL automatically updates with your input, and can be shared with others.**''',
             unsafe_allow_html=True,
         )
 
-        if button_c.button("Generate TinyURL", key="generate_tinyurl", type="primary"):
-            short_url = shorten_url(stp.get_page_url())
-            st.caption(f"Shortened URL: {short_url}")
 
     url_fragment()
 

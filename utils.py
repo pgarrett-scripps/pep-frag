@@ -19,6 +19,45 @@ def apply_centering_ccs(table_div_id: str) -> None:
     unsafe_allow_html=True
     )
 
+def apply_expanded_sidebar():
+    st.markdown(
+    """
+    <style>
+        section[data-testid="stSidebar"] {
+            width: 600px !important; # Set the width to your desired value
+        }
+    </style>
+    """,
+    unsafe_allow_html=True,
+    )
+
+
+
+def display_header():
+    st.markdown(f"""
+        <div style='text-align: center; padding: 15px; top-margin: 0px'>
+            <h3 style='margin: 0; font-size: 1.5em; color: #333;'>PepFrag 💣</h3>
+            <p style='font-size: 1.1em; line-height: 1.6; color: #555;'>
+                A Proforma2.0-Compliant Peptide Fragment Ion Calculator. 
+            </p>
+            <p style='font-size: 1.0em; line-height: 1.6; color: #555;'>
+                See the 
+                <a href="https://peptacular.readthedocs.io/en/latest/modules/getting_started.html#proforma-notation" 
+                target="_blank" style='color: #007BFF; text-decoration: none;'>
+                    Proforma Notation Docs
+                </a> for supported peptide syntax. To report any issues or suggest improvements, please visit the 
+                <a href="https://github.com/pgarrett-scripps/pep-frag" 
+                target="_blank" style='color: #007BFF; text-decoration: none;'>
+                    PepFrag Github Repo. 
+                </a>
+                Powered by 
+                <a href="https://github.com/pgarrett-scripps/peptacular" target="_blank" style='color: #007BFF; text-decoration: none;'>
+                    <strong>Peptacular</strong>
+                </a>. 
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
+
 def validate_peptide(peptide_sequence: str) -> None:
     """Parse and validate peptide sequence"""
     try:
