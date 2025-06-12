@@ -20,13 +20,22 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# Set default values for environment variables
+# Only available during build
 ENV PROJECT_TITLE="Pep-Frag" \
-    PROJECT_DESCRIPTION="A Peptide Fragment Ion Calculator" \
+    PROJECT_DESCRIPTION="A Peptide Fragment Ion Calculator. Calculate the predicted mass-to-charge ratios (m/z) for peptide fragment ions." \
     PROJECT_IMAGE_URL="https://github.com/pgarrett-scripps/pep-frag/blob/main/images/screenshot.png?raw=true" \
     GOOGLE_SITE_VERIFICATION_CODE="iwWmQAEGgn2bJq35Hj9TF_4RgPjjfyrlCGNBfLiHn2w"
 
+# Find streamlit's static directory and modify the index.html file
+RUN STREAMLIT_PATH=$(python -c "import streamlit; import os; print(os.path.dirname(streamlit.__file__))") && \
+    INDEX_PATH="$STREAMLIT_PATH/static/index.html" && \
+    echo "Streamlit index.html found at: $INDEX_PATH" && \
+    cp "$INDEX_PATH" "$INDEX_PATH.backup" && \
+    sed -i "s|<head>|<head>\n    <!-- Google Site Verification -->\n    <meta name=\"google-site-verification\" content=\"$GOOGLE_SITE_VERIFICATION_CODE\" />\n\n    <!-- Primary Meta Tags -->\n    <meta\n      name=\"description\"\n      content=\"$PROJECT_DESCRIPTION\"\n    />\n\n    <!-- Open Graph / Facebook -->\n    <meta property=\"og:type\" content=\"website\" />\n    <meta property=\"og:url\" content=\"https://metatags.io/\" />\n    <meta property=\"og:title\" content=\"$PROJECT_TITLE\" />\n    <meta\n      property=\"og:description\"\n      content=\"$PROJECT_DESCRIPTION\"\n    />\n    <meta\n      property=\"og:image\"\n      content=\"$PROJECT_IMAGE_URL\"\n    />\n\n    <!-- Twitter -->\n    <meta property=\"twitter:card\" content=\"summary_large_image\" />\n    <meta property=\"twitter:url\" content=\"https://metatags.io/\" />\n    <meta property=\"twitter:title\" content=\"$PROJECT_TITLE\" />\n    <meta\n      property=\"twitter:description\"\n      content=\"$PROJECT_DESCRIPTION\"\n    />\n    <meta\n      property=\"twitter:image\"\n      content=\"$PROJECT_IMAGE_URL\"\n    />|" "$INDEX_PATH" && \
+    sed -i "s|<title>Streamlit</title>|<title>$PROJECT_TITLE</title>|g" "$INDEX_PATH"
 
+
+# Streamlit configuration
 ENV STREAMLIT_SERVER_PORT="8501" \
     STREAMLIT_SERVER_BASE_URL_PATH="" \
     STREAMLIT_ENABLE_COORS="true" \
@@ -40,13 +49,6 @@ ENV STREAMLIT_SERVER_PORT="8501" \
     STREAMLIT_FILE_WATCHER_TYPE="none" \
     STREAMLIT_CLIENT_TOOLBAR_MODE="viewer" \
     HOME="/home/appuser"
-
-# Find streamlit's static directory and modify the index.html file
-RUN STREAMLIT_PATH=$(python -c "import streamlit; import os; print(os.path.dirname(streamlit.__file__))") && \
-    INDEX_PATH="$STREAMLIT_PATH/static/index.html" && \
-    echo "Streamlit index.html found at: $INDEX_PATH" && \
-    cp "$INDEX_PATH" "$INDEX_PATH.backup" && \
-    sed -i "s|<head>|<head>\n    <!-- Google Site Verification -->\n    <meta name=\"google-site-verification\" content=\"$GOOGLE_SITE_VERIFICATION_CODE\" />\n\n    <!-- Primary Meta Tags -->\n    <meta\n      name=\"description\"\n      content=\"$PROJECT_DESCRIPTION\"\n    />\n\n    <!-- Open Graph / Facebook -->\n    <meta property=\"og:type\" content=\"website\" />\n    <meta property=\"og:url\" content=\"https://metatags.io/\" />\n    <meta property=\"og:title\" content=\"$PROJECT_TITLE\" />\n    <meta\n      property=\"og:description\"\n      content=\"$PROJECT_DESCRIPTION\"\n    />\n    <meta\n      property=\"og:image\"\n      content=\"$PROJECT_IMAGE_URL\"\n    />\n\n    <!-- Twitter -->\n    <meta property=\"twitter:card\" content=\"summary_large_image\" />\n    <meta property=\"twitter:url\" content=\"https://metatags.io/\" />\n    <meta property=\"twitter:title\" content=\"$PROJECT_TITLE\" />\n    <meta\n      property=\"twitter:description\"\n      content=\"$PROJECT_DESCRIPTION\"\n    />\n    <meta\n      property=\"twitter:image\"\n      content=\"$PROJECT_IMAGE_URL\"\n    />|" "$INDEX_PATH"
 
 # Metadata labels
 LABEL maintainer="Patrick Garrett <pgarrett@scripps.edu>"
